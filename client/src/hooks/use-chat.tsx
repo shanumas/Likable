@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import { toast } from '@/hooks/use-toast';
 import type { ChatMessage, CodeGenerationResult, ConversationState } from '@/lib/types';
 import type { Conversation, Message, Prototype } from '@shared/schema';
 
@@ -100,6 +101,14 @@ export function useChat(): UseChatReturn {
       });
       return response.json() as Promise<CodeGenerationResult>;
     },
+    onMutate: () => {
+      // Show generating toast
+      toast({
+        title: "Generating...",
+        description: "Updating...",
+        duration: Infinity, // Keep toast until generation completes
+      });
+    },
     onSuccess: async (codeResult) => {
       if (!conversation.id) return;
 
@@ -115,6 +124,13 @@ export function useChat(): UseChatReturn {
         
         queryClient.invalidateQueries({ queryKey: ['/api/conversations', conversation.id, 'messages'] });
         setError(null);
+        
+        // Show success toast for question
+        toast({
+          title: "Response received",
+          description: "AI is asking for more details",
+          duration: 3000,
+        });
         return;
       }
 
@@ -160,13 +176,36 @@ export function useChat(): UseChatReturn {
         
         queryClient.invalidateQueries({ queryKey: ['/api/conversations', conversation.id, 'messages'] });
         setError(null); // Clear any previous errors
+        
+        // Show success toast
+        toast({
+          title: "Generation complete!",
+          description: "Your prototype has been updated",
+          duration: 3000,
+        });
       } catch (error) {
         console.error('Failed to save prototype:', error);
         setError('Generated code but failed to save prototype');
+        
+        // Show error toast
+        toast({
+          title: "Generation failed",
+          description: "Generated code but failed to save prototype",
+          variant: "destructive",
+          duration: 5000,
+        });
       }
     },
     onError: (error) => {
       setError('Failed to generate code: ' + (error as Error).message);
+      
+      // Show error toast
+      toast({
+        title: "Generation failed",
+        description: "Failed to generate code: " + (error as Error).message,
+        variant: "destructive",
+        duration: 5000,
+      });
     }
   });
 

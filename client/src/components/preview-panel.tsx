@@ -135,30 +135,13 @@ export function PreviewPanel({ htmlContent, onViewCode, isGenerating }: PreviewP
       <div className="flex-1 p-6 overflow-auto">
         {/* Preview Frame */}
         <div className={cn("bg-white rounded-xl shadow-2xl h-full min-h-[600px] overflow-hidden transition-all duration-300", getDeviceClass())}>
-          {isGenerating ? (
-            <div className="h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-                  <Code className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Generating Prototype</h3>
-                <p className="text-gray-600">Creating your custom prototype...</p>
-                <div className="flex space-x-1 justify-center mt-4">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                </div>
-              </div>
-            </div>
-          ) : (
-            <iframe
-              ref={iframeRef}
-              className="w-full h-full"
-              title="Prototype Preview"
-              sandbox="allow-scripts allow-same-origin"
-              srcDoc={htmlContent || defaultContent}
-            />
-          )}
+          <iframe
+            ref={iframeRef}
+            className="w-full h-full"
+            title="Prototype Preview"
+            sandbox="allow-scripts allow-same-origin"
+            srcDoc={htmlContent || defaultContent}
+          />
         </div>
       </div>
 
