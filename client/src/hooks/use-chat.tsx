@@ -105,7 +105,7 @@ export function useChat(): UseChatReturn {
       // Show generating toast
       toast({
         title: "Generating...",
-        description: "Updating...",
+        description: "",
         duration: Infinity, // Keep toast until generation completes
       });
     },

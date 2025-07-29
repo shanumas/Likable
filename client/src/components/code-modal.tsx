@@ -82,7 +82,7 @@ export function CodeModal({ isOpen, onClose, htmlContent }: CodeModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] bg-surface border-slate-700 flex flex-col">
+      <DialogContent className="max-w-6xl h-[80vh] bg-surface border-slate-700 flex flex-col">
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <DialogTitle className="text-slate-50">Generated Code</DialogTitle>
           <div className="flex items-center space-x-3">
@@ -141,7 +141,7 @@ export function CodeModal({ isOpen, onClose, htmlContent }: CodeModalProps) {
             </TabsContent>
 
             <TabsContent value="html" className="h-full">
-              <div className="relative h-full">
+              <div className="relative h-full flex flex-col">
                 <Button
                   onClick={() => handleCopy(htmlContent)}
                   size="sm"
@@ -151,14 +151,14 @@ export function CodeModal({ isOpen, onClose, htmlContent }: CodeModalProps) {
                   <Copy className="w-3 h-3 mr-1" />
                   Copy
                 </Button>
-                <pre className="bg-slate-900 rounded-lg p-4 h-full overflow-auto text-sm font-mono">
+                <pre className="bg-slate-900 rounded-lg p-4 flex-1 overflow-auto text-sm font-mono min-h-0">
                   <code className="text-slate-300">{htmlContent}</code>
                 </pre>
               </div>
             </TabsContent>
 
             <TabsContent value="css" className="h-full">
-              <div className="relative h-full">
+              <div className="relative h-full flex flex-col">
                 {cssContent ? (
                   <>
                     <Button
@@ -170,7 +170,7 @@ export function CodeModal({ isOpen, onClose, htmlContent }: CodeModalProps) {
                       <Copy className="w-3 h-3 mr-1" />
                       Copy
                     </Button>
-                    <pre className="bg-slate-900 rounded-lg p-4 h-full overflow-auto text-sm font-mono">
+                    <pre className="bg-slate-900 rounded-lg p-4 flex-1 overflow-auto text-sm font-mono min-h-0">
                       <code className="text-slate-300">{cssContent}</code>
                     </pre>
                   </>
@@ -183,7 +183,7 @@ export function CodeModal({ isOpen, onClose, htmlContent }: CodeModalProps) {
             </TabsContent>
 
             <TabsContent value="js" className="h-full">
-              <div className="relative h-full">
+              <div className="relative h-full flex flex-col">
                 {jsContent ? (
                   <>
                     <Button
@@ -195,7 +195,7 @@ export function CodeModal({ isOpen, onClose, htmlContent }: CodeModalProps) {
                       <Copy className="w-3 h-3 mr-1" />
                       Copy
                     </Button>
-                    <pre className="bg-slate-900 rounded-lg p-4 h-full overflow-auto text-sm font-mono">
+                    <pre className="bg-slate-900 rounded-lg p-4 flex-1 overflow-auto text-sm font-mono min-h-0">
                       <code className="text-slate-300">{jsContent}</code>
                     </pre>
                   </>
