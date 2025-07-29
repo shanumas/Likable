@@ -154,7 +154,7 @@ export function useChat(): UseChatReturn {
         await apiRequest('POST', '/api/messages', {
           conversationId: conversation.id,
           role: 'assistant',
-          content: `I've generated the prototype! ${codeResult.explanation}`,
+          content: `${codeResult.explanation}`,
           metadata: { codeGenerated: true },
         });
         
