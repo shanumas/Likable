@@ -45,7 +45,8 @@ setInterval(() => {
 }, 5 * 60 * 1000);
 
 // Create cache key from prompt and conversation context
-export function createCacheKey(prompt: string, conversationHistory?: Array<{ role: string; content: string }>): string {
+export function createCacheKey(prompt: string, conversationHistory?: Array<{ role: string; content: string }>, currentPrototype?: string): string {
   const contextStr = conversationHistory?.slice(-3).map(m => `${m.role}:${m.content.slice(0, 100)}`).join('|') || '';
-  return `${prompt.slice(0, 200)}|${contextStr}`.replace(/\s+/g, ' ');
+  const prototypeHash = currentPrototype ? `prototype:${currentPrototype.slice(0, 200)}` : 'no-prototype';
+  return `${prompt.slice(0, 200)}|${contextStr}|${prototypeHash}`.replace(/\s+/g, ' ');
 }

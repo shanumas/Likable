@@ -112,9 +112,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }));
       }
 
+      // Get current prototype for targeted modifications
+      let currentPrototype: string | undefined;
+      if (conversationId) {
+        const prototype = await storage.getPrototypeByConversationId(conversationId);
+        if (prototype) {
+          currentPrototype = prototype.htmlContent;
+          console.log('Current prototype found, length:', currentPrototype.length);
+        } else {
+          console.log('No current prototype found for conversation:', conversationId);
+        }
+      }
+
       const codeResult = await generateCode({ 
         prompt, 
-        conversationHistory: conversationHistory.slice(-10) // Last 10 messages for context
+        conversationHistory: conversationHistory.slice(-10), // Last 10 messages for context
+        currentPrototype // Pass current prototype for targeted modifications
       });
 
       res.json(codeResult);

@@ -45,9 +45,6 @@ export function Header({ onExport, currentPrototype }: HeaderProps) {
           <Wand2 className="text-white w-4 h-4" />
         </div>
         <h1 className="text-xl font-semibold text-slate-50">Likable</h1>
-        <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 hover:bg-blue-500/30">
-          BETA
-        </Badge>
       </div>
       
       <div className="flex items-center space-x-4">

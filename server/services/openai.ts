@@ -9,6 +9,7 @@ const openai = new OpenAI({
 export interface CodeGenerationRequest {
   prompt: string;
   conversationHistory?: Array<{ role: string; content: string; }>;
+  currentPrototype?: string; // Add current prototype HTML for targeted modifications
 }
 
 export interface CodeGenerationResponse {
@@ -25,23 +26,55 @@ export async function generateCode(request: CodeGenerationRequest): Promise<Code
   }
 
   // Check cache first for similar requests
-  const cacheKey = createCacheKey(request.prompt, request.conversationHistory);
+  const cacheKey = createCacheKey(request.prompt, request.conversationHistory, request.currentPrototype);
   const cachedResult = responseCache.get(cacheKey);
   if (cachedResult) {
     console.log("Returning cached result for:", request.prompt.slice(0, 50));
     return cachedResult;
   }
 
-  const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-    {
-      role: "system",
-      content: `You are an expert frontend developer specialized in creating beautiful, modern web prototypes. 
+  // Determine if this is a modification request or new generation
+  const isModification = request.currentPrototype && request.currentPrototype.trim().length > 0;
+
+  console.log('request.currentPrototype', request.currentPrototype);
+  
+  console.log('Code generation request:', {
+    isModification,
+    currentPrototypeLength: request.currentPrototype?.length || 0,
+    prompt: request.prompt.slice(0, 100) + '...'
+  });
+
+  const systemPrompt = isModification 
+    ? `You are an expert frontend developer specialized in modifying existing web prototypes with targeted changes.
+
+CRITICAL: You are modifying an existing HTML prototype. You MUST preserve the EXACT same structure, layout, colors, styling, and content. Only make the specific change requested by the user.
+
+STRICT MODIFICATION RULES:
+1. KEEP THE EXACT SAME HTML STRUCTURE - do not change the overall layout
+2. KEEP THE EXACT SAME CSS STYLES - do not modify colors, fonts, spacing, or layout
+3. KEEP THE EXACT SAME CONTENT - do not change any text, images, or sections unless specifically requested
+4. KEEP THE EXACT SAME SECTIONS - do not add, remove, or reorder sections
+5. KEEP THE EXACT SAME HEADER AND FOOTER - do not modify navigation or footer content unless specifically requested
+6. ONLY modify the specific element or content that the user explicitly asks to change
+7. If adding content, add it to the appropriate existing section without changing the section structure
+8. If changing text, change only the specific text mentioned, not the entire section
+9. If changing colors, change only the specific element mentioned, not the entire color scheme
+10. Maintain the complete HTML document structure exactly as it is
+
+CURRENT PROTOTYPE HTML:
+${request.currentPrototype}
+
+IMPORTANT: Your response must be a complete, valid HTML document that looks IDENTICAL to the current prototype except for the specific change requested. The layout, colors, fonts, spacing, and structure must remain exactly the same.
+
+RESPONSE FORMAT: Return a JSON object with this exact structure:
+{"html": "complete modified HTML document", "explanation": "brief description of the specific change made"}
+
+The html field must contain the complete HTML document with your modification applied.`
+    : `You are an expert frontend developer specialized in creating beautiful, modern web prototypes. 
 
 CRITICAL: You are creating standalone websites/landing pages/applications based on user requests. DO NOT create interfaces that look like chat applications, development tools, or code editors unless specifically requested.
 
 GENERATE CODE PROACTIVELY: When users provide sufficient information (like name, education, work experience, skills, certifications), immediately generate the complete website. Don't ask for more details unless absolutely critical information is missing.
-
-MODIFICATION REQUESTS: When users make requests that seem to modify existing content (like "not X, just Y" or "change X to Y"), interpret this as instructions to modify the current prototype. Use the conversation history to understand what currently exists and make the requested changes.
 
 IMPORTANT INSTRUCTIONS:
 1. For CV/Resume websites: If user provides name, education, work experience, skills, or certifications - GENERATE THE WEBSITE IMMEDIATELY
@@ -66,7 +99,12 @@ For code: {"html": "complete HTML with embedded CSS and JS", "explanation": "bri
 16. Embed JavaScript in <script> tags before closing body tag
 17. Use CDN links for external libraries (Tailwind, fonts, icons)
 18. Make it production-ready and visually impressive
-19. Focus on creating the specific type of website requested (landing page, portfolio, etc.) - NOT development tools or chat interfaces`
+19. Focus on creating the specific type of website requested (landing page, portfolio, etc.) - NOT development tools or chat interfaces`;
+
+  const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+    {
+      role: "system",
+      content: systemPrompt
     }
   ];
 
@@ -89,7 +127,7 @@ For code: {"html": "complete HTML with embedded CSS and JS", "explanation": "bri
       model: "gpt-4o",
       messages,
       response_format: { type: "json_object" },
-      temperature: 0.7,
+      temperature: isModification ? 0.1 : 0.7, // Lower temperature for modifications to be more conservative
       max_tokens: 2000, // Reduced from 4000 for faster generation
       stream: false, // Ensure we get the full response at once
     });

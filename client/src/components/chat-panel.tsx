@@ -45,7 +45,7 @@ export function ChatPanel({
     if (!message || isSending) return;
 
     // Check if this looks like a code generation or modification request
-    const codeKeywords = ['create', 'build', 'make', 'generate', 'design', 'prototype', 'landing page', 'website', 'app', 'component', 'change', 'update', 'modify', 'edit', 'add', 'remove', 'fix', 'replace', 'color', 'text', 'heading', 'button', 'style', 'cv', 'resume', 'portfolio'];
+    const codeKeywords = ['create', 'build', 'make', 'generate', 'design', 'prototype', 'landing page', 'website', 'app', 'component', 'change', 'update', 'modify', 'edit', 'add', 'remove', 'fix', 'replace', 'color', 'text', 'heading', 'button', 'style', 'cv', 'resume', 'portfolio', 'footer', 'header', 'email', 'phone', 'address', 'contact', 'privacy', 'policy', 'terms', 'copyright', 'social', 'media', 'link', 'image', 'logo', 'title', 'name', 'description'];
     
     // Also check for patterns that suggest content changes (more liberal detection)
     const contentChangePatterns = [
@@ -253,7 +253,7 @@ export function ChatPanel({
         
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-200 text-xs">
+            <Button variant="ghost" size="sm" className="hidden text-slate-400 hover:text-slate-200 text-xs">
               <Paperclip className="w-3 h-3 mr-1" />
               Attach
             </Button>
